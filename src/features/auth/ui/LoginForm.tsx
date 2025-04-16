@@ -1,23 +1,42 @@
 import { useState } from 'react';
 import { login } from '../model/authApi';
 import { useNavigate } from 'react-router-dom';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginForm() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [globalError, setGlobalError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.username.trim()) newErrors.username = true;
+    if (!form.email.includes('@')) newErrors.email = true;
+    if (!form.password) newErrors.password = true;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setGlobalError('');
+
+    if (!validateForm()) return;
+
     try {
       await login(form);
       sessionStorage.setItem('username', form.username);
       navigate('/dashboard');
     } catch (err) {
-      alert('Ошибка входа');
+      setGlobalError('Неверное имя пользователя, email или пароль');
     }
   };
 
@@ -29,6 +48,15 @@ export default function LoginForm() {
           <div>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Войти в Claimix</h2>
             <p className="text-gray-500 mb-6">Введите данные для входа в аккаунт</p>
+
+            {globalError && (
+              <div className="mb-4 flex items-center text-sm text-red-600 gap-2">
+                <FiAlertCircle size={18} className="mt-[1px]" />
+                <span>{globalError}</span>
+              </div>
+            )}
+
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
@@ -36,24 +64,44 @@ export default function LoginForm() {
                 placeholder="Имя пользователя"
                 value={form.username}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                className={`w-full h-12 px-4 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
+                  errors.username ? 'border-red-500' : ''
+                }`}
               />
+
               <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                className={`w-full h-12 px-4 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
+                  errors.email ? 'border-red-500' : ''
+                }`}
               />
-              <input
-                type="password"
-                name="password"
-                placeholder="Пароль"
-                value={form.password}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-              />
+
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  placeholder="Пароль"
+                  value={form.password}
+                  onChange={handleChange}
+                  className={`w-full h-12 px-4 pr-12 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
+                    errors.password ? 'border-red-500' : ''
+                  }`}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="text-gray-500 focus:outline-none"
+                  >
+                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 rounded-xl transition"
@@ -62,9 +110,9 @@ export default function LoginForm() {
               </button>
             </form>
           </div>
+
           <div className="mt-8 flex items-center justify-between text-sm text-gray-500">
-            <a href="#" className="hover:underline">Нет аккаунта? Зарегистрироваться</a>
-            <a href="#" className="hover:underline">Забыли пароль?</a>
+            <a href="register/" className="hover:underline">Нет аккаунта? Зарегистрироваться</a>
           </div>
         </div>
 

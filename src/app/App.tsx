@@ -14,11 +14,14 @@ import { WorkflowBuilder } from '../pages/WorkflowBuilder/WorkflowBuilder';
 import ProtectedRoute from '../shared/ui/ProtectedRoute';
 import AuthRedirect from '../shared/ui/AuthRedirect';
 
+
+import ApplicationsPage from '../pages/applications/ApplicationsPage';
+import ApplicationDetailPage from '../pages/applications/ApplicationDetailPage';
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth */}
         <Route path="/login" element={
           <AuthRedirect>
             <LoginPage />
@@ -30,14 +33,16 @@ export default function App() {
           </AuthRedirect>
         } />
 
-        {/* Dashboard */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
         } />
 
-        {/* Workflow */}
+        <Route path="/applications" element={<ApplicationsPage />} />
+        {/* <Route path="/applications/:id" element={<ApplicationDetailPage />} /> */}
+        <Route path="/applications1" element={<ApplicationDetailPage />} />
+
         <Route path="/" element={
           <ProtectedRoute>
             <Workplace />
@@ -51,7 +56,6 @@ export default function App() {
           </ProtectedRoute>
         } />
 
-        {/* Redirect fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
