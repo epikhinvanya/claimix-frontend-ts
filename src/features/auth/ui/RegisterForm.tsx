@@ -1,23 +1,28 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { register } from '../model/authApi';
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FiCheck, FiX } from 'react-icons/fi';
 
 export default function RegisterForm() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormDataRegister>({
     username: '',
     email: '',
-    password1: '',
+    password: '',
     password2: '',
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormDataErrors>({});
   const [globalError, setGlobalError] = useState('');
-  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const navigate = useNavigate();
 
-  const passwordChecks = {
+  const passwordChecks: {
+    [key: string]: {
+      label: string;
+      test: (v: string) => boolean;
+    };
+  } = {
     length: {
       label: 'Минимум 8 символов',
       test: (v) => v.length >= 8,
@@ -36,21 +41,21 @@ export default function RegisterForm() {
     },
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: FormDataErrors = {};
     if (!form.username.trim()) newErrors.username = true;
     if (!form.email.includes('@')) newErrors.email = true;
 
     const failedChecks = Object.values(passwordChecks).filter(
-      (check) => !check.test(form.password1)
+      (check) => !check.test(form.password)
     );
-    if (failedChecks.length > 0) newErrors.password1 = true;
+    if (failedChecks.length > 0) newErrors.password = true;
 
-    if (form.password1 !== form.password2) {
+    if (form.password !== form.password2) {
       newErrors.password2 = true;
     }
 
@@ -58,7 +63,7 @@ export default function RegisterForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setGlobalError('');
 
@@ -113,29 +118,29 @@ export default function RegisterForm() {
 
               <div className="relative">
                 <input
-                  type={showPassword1 ? 'text' : 'password'}
+                  type={showPassword ? 'text' : 'password'}
                   name="password1"
                   placeholder="Пароль"
-                  value={form.password1}
+                  value={form.password}
                   onChange={handleChange}
                   className={`w-full h-12 px-4 pr-12 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
-                    errors.password1 ? 'border-red-500' : ''
+                    errors.password ? 'border-red-500' : ''
                   }`}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <button
                     type="button"
-                    onClick={() => setShowPassword1((prev) => !prev)}
+                    onClick={() => setShowPassword((prev) => !prev)}
                     className="text-gray-500 focus:outline-none"
                   >
-                    {showPassword1 ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
                   </button>
                 </div>
               </div>
 
               <div className="mt-2 text-sm space-y-1 text-gray-500">
                 {Object.entries(passwordChecks).map(([key, { label, test }]) => {
-                  const passed = test(form.password1);
+                  const passed = test(form.password);
                   return (
                     <div key={key} className="flex items-center gap-2">
                       <span className={passed ? 'text-green-500' : 'text-red-500'}>

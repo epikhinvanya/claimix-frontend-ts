@@ -1,22 +1,22 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { login } from '../model/authApi';
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginForm() {
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
-  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState<FormDataAuth>({ username: ' ', email: ' ', password: ' ' });
+  const [errors, setErrors] = useState<FormDataErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [globalError, setGlobalError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: FormDataErrors = {};
     if (!form.username.trim()) newErrors.username = true;
     if (!form.email.includes('@')) newErrors.email = true;
     if (!form.password) newErrors.password = true;
@@ -25,7 +25,7 @@ export default function LoginForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setGlobalError('');
 
