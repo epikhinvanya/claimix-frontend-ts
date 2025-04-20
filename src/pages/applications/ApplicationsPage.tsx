@@ -18,17 +18,30 @@ export default function ApplicationsListPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   axios
+  //     .get('http://claimix.localhost:8000/api/applications/', {
+  //       headers: {
+  //         Authorization: 'Token 6a922ada2a4f4b81740b8079b481106547b4c51e',
+  //       },
+  //     })
+  //     .then((res) => setApplications(res.data))
+  //     .catch((err) => console.error('Ошибка загрузки заявок', err))
+  //     .finally(() => setLoading(false));
+  // }, []);
+
   useEffect(() => {
-    axios
-      .get('http://claimix.localhost:8000/api/applications/', {
-        headers: {
-          Authorization: 'Token 6a922ada2a4f4b81740b8079b481106547b4c51e',
-        },
-      })
-      .then((res) => setApplications(res.data))
-      .catch((err) => console.error('Ошибка загрузки заявок', err))
-      .finally(() => setLoading(false));
+    const fakeData: Application[] = [
+      { id: 1, title: 'Установка урн на Абая 32', status: 'Новая', role: 'client' },
+      { id: 2, title: 'Уборка территории у школы №58', status: 'В процессе', role: 'manager' },
+      { id: 3, title: 'Ремонт освещения на проспекте Назарбаева', status: 'Закрыта', role: 'admin' },
+      { id: 4, title: 'Вывоз мусора с площадки у дома 24', status: 'Новая', role: 'manager' },
+      { id: 5, title: 'Проверка жалобы на шум', status: 'Закрыта', role: 'client' },
+    ];
+    setApplications(fakeData);
+    setLoading(false);
   }, []);
+  
 
   const filtered = applications.filter(
     (app) =>

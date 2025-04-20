@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://claimix.localhost:8000',
+  baseURL: 'http://test.claimix.ru/',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -119,7 +119,7 @@ export default function RegisterForm() {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  name="password1"
+                  name="password"
                   placeholder="Пароль"
                   value={form.password}
                   onChange={handleChange}

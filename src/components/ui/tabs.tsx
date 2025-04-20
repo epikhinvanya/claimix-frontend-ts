@@ -1,26 +1,38 @@
-import { ReactNode, useState } from 'react';
-import React from 'react';
+import React, { ReactNode, useState } from 'react';
 
+type TabsProps = {
+  defaultValue: string;
+  children: ReactNode;
+};
 
-export function Tabs({ defaultValue, children }: { defaultValue: string; children: ReactNode }) {
+export function Tabs({ defaultValue, children }: TabsProps) {
   const [active, setActive] = useState(defaultValue);
+
   return (
     <div>
-      {Array.isArray(children) &&
-        children.map((child: any) =>
-          child.type.name === 'TabsList'
-            ? React.cloneElement(child, { active, setActive })
-            : child.type.name === 'TabsContent' && child.props.value === active
-            ? child
-            : null
-        )}
+      {React.Children.map(children, (child: any) => {
+        if (child.type.name === 'TabsList') {
+          return React.cloneElement(child, { active, setActive });
+        }
+        if (child.type.name === 'TabsContent') {
+          return React.cloneElement(child, { active });
+        }
+        return null;
+      })}
     </div>
   );
 }
-export function TabsList({ children, active, setActive }: any) {
+
+type TabsListProps = React.HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+  active: string;
+  setActive: (value: string) => void;
+};
+
+export function TabsList({ children, active, setActive, className = '', ...rest }: TabsListProps) {
   return (
-    <div className="flex space-x-2 mb-4">
-      {children.map((child: any) =>
+    <div className={`flex space-x-2 ${className}`} {...rest}>
+      {React.Children.map(children, (child: any) =>
         React.cloneElement(child, {
           isActive: active === child.props.value,
           onSelect: () => setActive(child.props.value),
@@ -29,7 +41,15 @@ export function TabsList({ children, active, setActive }: any) {
     </div>
   );
 }
-export function TabsTrigger({ value, children, isActive, onSelect }: any) {
+
+type TabsTriggerProps = {
+  value: string;
+  children: ReactNode;
+  isActive?: boolean;
+  onSelect?: () => void;
+};
+
+export function TabsTrigger({ children, isActive, onSelect }: TabsTriggerProps) {
   return (
     <button
       onClick={onSelect}
@@ -40,6 +60,13 @@ export function TabsTrigger({ value, children, isActive, onSelect }: any) {
   );
 }
 
-export function TabsContent({ children }: { children: ReactNode }) {
+type TabsContentProps = {
+  value: string;
+  active?: string;
+  children: ReactNode;
+};
+
+export function TabsContent({ value, active, children }: TabsContentProps) {
+  if (value !== active) return null;
   return <div>{children}</div>;
 }
