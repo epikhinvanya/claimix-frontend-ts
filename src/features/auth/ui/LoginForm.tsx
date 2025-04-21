@@ -1,11 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { login } from '../model/authApi';
+import { loginFx } from '../model/effects';
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginForm() {
-  const [form, setForm] = useState<FormDataAuth>({ username: ' ', email: ' ', password: ' ' });
+  const [form, setForm] = useState<FormDataAuth>({ username: ' ', password: ' ' });
   const [errors, setErrors] = useState<FormDataErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -18,7 +18,6 @@ export default function LoginForm() {
   const validateForm = () => {
     const newErrors: FormDataErrors = {};
     if (!form.username.trim()) newErrors.username = true;
-    if (!form.email.includes('@')) newErrors.email = true;
     if (!form.password) newErrors.password = true;
 
     setErrors(newErrors);
@@ -32,14 +31,13 @@ export default function LoginForm() {
     if (!validateForm()) return;
 
     try {
-      await login(form);
-      sessionStorage.setItem('username', form.username);
+      await loginFx(form);
       navigate('/dashboard');
     } catch (err) {
-      setGlobalError('Неверное имя пользователя, email или пароль');
+      console.error('Login failed:', err);
+      setGlobalError('Неверное имя пользователя или пароль');
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-gray-100 px-4">
       <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex w-full max-w-5xl">
@@ -66,17 +64,6 @@ export default function LoginForm() {
                 onChange={handleChange}
                 className={`w-full h-12 px-4 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
                   errors.username ? 'border-red-500' : ''
-                }`}
-              />
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                className={`w-full h-12 px-4 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none ${
-                  errors.email ? 'border-red-500' : ''
                 }`}
               />
 

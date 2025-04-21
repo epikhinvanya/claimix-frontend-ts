@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { register } from '../model/authApi';
+import { registerFx } from '../model/effects';
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FiCheck, FiX } from 'react-icons/fi';
@@ -10,6 +10,8 @@ export default function RegisterForm() {
     email: '',
     password: '',
     password2: '',
+    first_name: '',
+    last_name: ''
   });
   const [errors, setErrors] = useState<FormDataErrors>({});
   const [globalError, setGlobalError] = useState('');
@@ -66,14 +68,14 @@ export default function RegisterForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setGlobalError('');
-
+  
     if (!validateForm()) return;
-
+  
     try {
-      await register(form);
-      sessionStorage.setItem('username', form.username);
+      await registerFx(form);
       navigate('/dashboard');
     } catch (err) {
+      console.error('Registration failed:', err);
       setGlobalError('Ошибка регистрации. Проверьте данные и попробуйте снова.');
     }
   };
