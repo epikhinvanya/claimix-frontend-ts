@@ -19,6 +19,9 @@ import AuthRedirect from '../shared/ui/AuthRedirect';
 import ApplicationsPage from '../pages/applications/ApplicationsPage';
 import ApplicationDetailPage from '../pages/applications/ApplicationDetailPage';
 
+
+import CreateApplicationPage from '../pages/createApplication/createApplicationPage';
+
 export default function App() {
 
 
@@ -26,38 +29,45 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={
-          <AuthRedirect>
+          // <AuthRedirect>
             <LoginPage />
-          </AuthRedirect>
+          // </AuthRedirect>
         } />
         <Route path="/register" element={
-          <AuthRedirect>
+          // <AuthRedirect>
             <RegisterPage />
-          </AuthRedirect>
+          // </AuthRedirect>
         } />
 
         <Route path="/dashboard" element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <DashboardPage />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
 
         <Route path="/applications" element={<ApplicationsPage />} />
         {/* <Route path="/applications/:id" element={<ApplicationDetailPage />} /> */}
-        <Route path="/applications1" element={<ApplicationDetailPage />} />
+        <Route path="/applications/:id" element={<ApplicationDetailPage />} />
 
-        <Route path="/" element={
-          <ProtectedRoute>
-            <Workplace />
-          </ProtectedRoute>
+        <Route path="/new-application" element={
+          // <ProtectedRoute>
+          <CreateApplicationPage />
+          // </ProtectedRoute>
         } />
         <Route path="/builder/:id" element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <ReactFlowProvider>
               <WorkflowBuilder />
             </ReactFlowProvider>
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
+
+        <Route path="/workplace" element={
+          // <ProtectedRoute>
+            <Workplace />
+          // </ProtectedRoute>
+        } />
+
 
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

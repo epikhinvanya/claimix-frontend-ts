@@ -15,14 +15,13 @@ interface Application {
 export default function ApplicationsListPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [statusFilter, setStatusFilter] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get('http://claimix.localhost:8000/api/applications/', {
+      .get('http://test.claimix.ru/api/workflows/applications/', {
         headers: {
-          Authorization: 'Token 6a922ada2a4f4b81740b8079b481106547b4c51e',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDI1MzY4LCJpYXQiOjE3NDU0MjM1NjgsImp0aSI6IjYxMDY3YmUwYWNmMTQzNTJhM2Q5NjdkNjljMzg5MjVhIiwidXNlcl9pZCI6MX0.2qz7hM-Z-IxQ8NgPcMeB7vciQtduI-Mh_-kCk8bga_0',
         },
       })
       .then((res) => setApplications(res.data))
@@ -30,10 +29,10 @@ export default function ApplicationsListPage() {
       .finally(() => setLoading(false));
   }, []);
 
+
   const filtered = applications.filter(
     (app) =>
-      (statusFilter ? app.status === statusFilter : true) &&
-      (roleFilter ? app.role === roleFilter : true)
+      (statusFilter ? app.status === statusFilter : true) 
   );
 
   return (
@@ -45,17 +44,12 @@ export default function ApplicationsListPage() {
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <Select onValueChange={setStatusFilter} defaultValue="">
             <SelectItem value="">Все статусы</SelectItem>
-            <SelectItem value="Новая">Новая</SelectItem>
-            <SelectItem value="В процессе">В процессе</SelectItem>
-            <SelectItem value="Закрыта">Закрыта</SelectItem>
+            <SelectItem value="pending">В обработке</SelectItem>
+            <SelectItem value="in_progress">В процессе</SelectItem>
+            <SelectItem value="done">Закрыта</SelectItem>
           </Select>
 
-          <Select onValueChange={setRoleFilter} defaultValue="">
-            <SelectItem value="">Все роли</SelectItem>
-            <SelectItem value="client">Клиент</SelectItem>
-            <SelectItem value="manager">Менеджер</SelectItem>
-            <SelectItem value="admin">Администратор</SelectItem>
-          </Select>
+          
         </div>
 
         <div className="space-y-4 h-[500px] overflow-y-auto pr-1">
@@ -68,9 +62,14 @@ export default function ApplicationsListPage() {
               <Card key={app.id} className="p-4 hover:bg-gray-50 border border-gray-200 rounded-xl">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="text-md font-semibold text-gray-800">{app.title}</h3>
-                    <p className="text-sm text-gray-500">Роль: {app.role}</p>
+                    <h3 className="text-md font-semibold text-gray-800">{app.claimant.name}</h3>
+                    <p className="text-sm text-gray-500">{app.claimant.phone_number}</p>
+                    <p className="text-sm text-gray-600 mt-1">Текст: {app.data.message}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Подана: {new Date(app.created_at).toLocaleString()}
+                    </p>
                   </div>
+
                   <Badge>{app.status}</Badge>
                 </div>
                 <Button
@@ -84,6 +83,7 @@ export default function ApplicationsListPage() {
             ))
           )}
         </div>
+
       </Card>
     </div>
   );
