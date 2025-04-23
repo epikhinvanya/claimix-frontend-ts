@@ -1,5 +1,9 @@
+import { useStore } from 'effector-react';
+import { $username } from "../../features/auth/model/";
+
+
 export default function DashboardPage() {
-    const username = sessionStorage.getItem('username') || 'Пользователь';
+    const username = useStore($username) || 'Пользователь';
   
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-gray-100 p-8">
