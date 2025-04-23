@@ -46,7 +46,7 @@ export default function App() {
         {/* <Route path="/applications/:id" element={<ApplicationDetailPage />} /> */}
         <Route path="/applications/:id" element={<ApplicationDetailPage />} />
 
-        <Route path="/" element={
+        <Route path="/new-application" element={
           // <ProtectedRoute>
           <CreateApplicationPage />
           // </ProtectedRoute>
