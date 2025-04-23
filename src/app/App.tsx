@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ReactFlowProvider } from 'reactflow';
+import { initSession } from './init';
 
 // Страницы авторизации
 import LoginPage from '../pages/login/LoginPage';
@@ -19,6 +20,8 @@ import ApplicationsPage from '../pages/applications/ApplicationsPage';
 import ApplicationDetailPage from '../pages/applications/ApplicationDetailPage';
 
 export default function App() {
+
+
   return (
     <BrowserRouter>
       <Routes>
