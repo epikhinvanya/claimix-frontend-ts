@@ -1,9 +1,10 @@
-import { useStore } from 'effector-react';
+import { useUnit } from 'effector-react';
 import { $username } from "../../features/auth/model/";
+import { Workplace } from '@pages/Workplace/Workplace';
 
 
 export default function DashboardPage() {
-    const username = useStore($username) || 'Пользователь';
+    const username = useUnit($username) || 'Пользователь';
   
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-gray-100 p-8">
@@ -34,7 +35,7 @@ export default function DashboardPage() {
             </div>
           </div>
   
-          
+          <Workplace/>
         </div>
       </div>
     );
