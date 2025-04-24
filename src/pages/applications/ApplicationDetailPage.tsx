@@ -1,20 +1,78 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectItem } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
 
+interface Application {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  role: string;
+  history: {
+    date: string;
+    action: string;
+    by: string;
+  }[];
+}
+
+const FAKE_DATA: Application[] = [
+  {
+    id: 1,
+    title: 'Установка урн на Абая 32',
+    description: 'Необходимо установить урны у подъездов дома.',
+    status: 'Новая',
+    role: 'client',
+    history: [
+      { date: '2024-04-01', action: 'Создана', by: 'Иван' },
+      { date: '2024-04-02', action: 'Передана на рассмотрение', by: 'Администратор' },
+    ],
+  },
+  {
+    id: 2,
+    title: 'Уборка территории у школы №58',
+    description: 'Поступила жалоба на мусор возле школы.',
+    status: 'В процессе',
+    role: 'manager',
+    history: [
+      { date: '2024-04-03', action: 'Создана', by: 'Пользователь' },
+      { date: '2024-04-04', action: 'Назначен исполнитель', by: 'Менеджер' },
+    ],
+  },
+  {
+    id: 3,
+    title: 'Ремонт освещения на проспекте Назарбаева',
+    description: 'Несколько фонарей не работают.',
+    status: 'Закрыта',
+    role: 'admin',
+    history: [
+      { date: '2024-04-05', action: 'Создана', by: 'Житель' },
+      { date: '2024-04-06', action: 'Передана', by: 'Оператор' },
+      { date: '2024-04-07', action: 'Закрыта', by: 'Исполнитель' },
+    ],
+  },
+];
+
 export default function ApplicationDetailPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [action, setAction] = useState('');
   const [comment, setComment] = useState('');
+  const [application, setApplication] = useState<Application | null>(null);
+
+  useEffect(() => {
+    const app = FAKE_DATA.find((item) => item.id === Number(id));
+    setApplication(app || null);
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-gray-100 flex justify-center items-start px-4 py-12">
       <Card className="w-full max-w-3xl p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-gray-800">Заявка #{id}</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Заявка #{id} {application ? `— ${application.title}` : ''}
+        </h1>
 
         <Tabs defaultValue="data">
           <TabsList className="mb-4">
@@ -24,15 +82,29 @@ export default function ApplicationDetailPage() {
           </TabsList>
 
           <TabsContent value="data">
-            <p className="text-sm text-gray-600">Здесь будут данные заявки</p>
+            {application ? (
+              <div className="space-y-2 text-sm text-gray-700">
+                <p><strong>Описание:</strong> {application.description}</p>
+                <p><strong>Статус:</strong> {application.status}</p>
+                <p><strong>Роль:</strong> {application.role}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Заявка не найдена.</p>
+            )}
           </TabsContent>
 
           <TabsContent value="history">
-            <ul className="text-sm list-disc pl-5 text-gray-600">
-              <li>Создана</li>
-              <li>Обработана</li>
-              <li>Передана</li>
-            </ul>
+            {application?.history?.length ? (
+              <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
+                {application.history.map((entry, index) => (
+                  <li key={index}>
+                    <span className="text-gray-800 font-medium">{entry.date}</span> — {entry.action} ({entry.by})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">История отсутствует.</p>
+            )}
           </TabsContent>
 
           <TabsContent value="action">
