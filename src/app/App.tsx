@@ -29,9 +29,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={
-          // <AuthRedirect>
+          <AuthRedirect>
             <LoginPage />
-          // </AuthRedirect>
+          </AuthRedirect>
         } />
         <Route path="/register" element={
           // <AuthRedirect>

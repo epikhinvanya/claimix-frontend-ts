@@ -68,13 +68,13 @@ export default function ApplicationDetailPage() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-gray-100 flex justify-center items-start px-4 py-12">
-      <Card className="w-full max-w-3xl p-6 space-y-6">
+    <div className="min-h-screen bg-[#f5f6fa] px-6 py-10 flex justify-center">
+      <Card className="w-full max-w-4xl p-8 rounded-2xl shadow-xl bg-white space-y-6">
         <h1 className="text-2xl font-bold text-gray-800">
           Заявка #{id} {application ? `— ${application.title}` : ''}
         </h1>
 
-        <Tabs defaultValue="data">
+        <Tabs defaultValue="data" className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="data">Данные</TabsTrigger>
             <TabsTrigger value="history">История</TabsTrigger>
@@ -108,18 +108,21 @@ export default function ApplicationDetailPage() {
           </TabsContent>
 
           <TabsContent value="action">
-            <form className="space-y-3">
+            <form className="space-y-4">
               <Textarea
                 placeholder="Комментарий..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
+                className="min-h-[100px] text-sm w-100"
               />
               <Select onValueChange={setAction} defaultValue="">
                 <SelectItem value="">Выбрать действие</SelectItem>
                 <SelectItem value="approve">Одобрить</SelectItem>
                 <SelectItem value="decline">Отклонить</SelectItem>
               </Select>
-              <Button type="submit">Перевести дальше</Button>
+              <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-700">
+                Перевести дальше
+              </Button>
             </form>
           </TabsContent>
         </Tabs>
