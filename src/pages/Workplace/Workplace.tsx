@@ -1,32 +1,40 @@
-import { useEffect, useState } from "react";
-import { Workflow } from "../../entities/Workflow/model/types";
+import { useEffect} from "react";
 import { useNavigate } from 'react-router-dom';
-import { deleteWorkflow, getWorkflows } from "../../entities/Workflow/model/storage";
-import { v4 as uuidv4 } from 'uuid';
+import { $workflows, createWorkflowFx, deleteWorkflowFx, fetchWorkflowsFx, renameWorkflowFx, setWorkflows } from "@features/workflow/model";
+import { useStore } from "effector-react";
 
 export const Workplace = () => {
-    const [workflows, setWorkflows] = useState<Record<string, Workflow>>({});
+    const workflows = useStore($workflows)
     const navigate = useNavigate();
 
     useEffect(() => {
-        setWorkflows(getWorkflows())
+        fetchWorkflowsFx().then(setWorkflows);
     }, [])
 
-    const handleCreate = () => {
-        const id = uuidv4();
-        const newWf = { id, name: `New Workflow ${id}`, nodes: [], edges: [] };
-        localStorage.setItem('workflows', JSON.stringify({ ...workflows, [id]: newWf }));
-        navigate(`/builder/${id}`);
+    const handleDelete = async (id: number) => {
+        await deleteWorkflowFx(id);
+        fetchWorkflowsFx().then(setWorkflows);
     }
 
-    const handleDelete = (id: string) => {
-        deleteWorkflow(id);
-        setWorkflows(getWorkflows());
+    const handleOpen = (id: number) => {
+        navigate(`/builder/${id}`)
+    }
+
+    const handleCreate = async () => {
+        const name = prompt('Название нового workflow:', 'Новый Workflow');
+        if (name) {
+            await createWorkflowFx(name);
+        }
+    }
+
+    const handleRename = async (id: number, currentName: string) => {
+        const newName = prompt('Новое имя workflow:', currentName);
+        if (newName && newName !== currentName) {
+          await renameWorkflowFx({ id, name: newName });
+          fetchWorkflowsFx();
+        }
       };
-    
-      const handleOpen = (id: string) => {
-        navigate(`/builder/${id}`);
-      };
+      
 
     return (
     <div className="p-6 space-y-4">
@@ -35,15 +43,19 @@ export const Workplace = () => {
         New Workflow
         </button>
         <div className="space-y-2">
-        {Object.values(workflows).map((wf) => (
-            <div key={wf.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
-            <span>{wf.name}</span>
-            <div className="space-x-2">
-                <button onClick={() => handleOpen(wf.id)} className="text-blue-600">Open</button>
-                <button onClick={() => handleDelete(wf.id)} className="text-red-600">Delete</button>
-            </div>
-            </div>
-        ))}
+            {workflows.map((wf) => (
+                <div key={wf.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
+                    <span>{wf.name}</span>
+                    <div className="flex flex-row gap-2">
+                    <button onClick={() => handleOpen(wf.id)} className="px-3 py-2 text-sm font-medium text-center text-white bg-green-500 rounded-lg 
+                                            hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-700 dark:focus:ring-green-800">Открыть</button>
+                    <button onClick={() => handleDelete(wf.id)} className="px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg 
+                                            hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-700 dark:focus:ring-red-800">Удалить</button>
+                    <button onClick={() => handleRename(wf.id, wf.name)} className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg 
+                                            hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Переименовать</button>
+                    </div>
+                </div>
+            ))}
         </div>
     </div>
     );

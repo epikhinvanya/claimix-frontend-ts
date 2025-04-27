@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 
 export default function LoginForm() {
-  const [form, setForm] = useState({ username: '', password: '' });
-  const [errors, setErrors] = useState<{ username?: boolean; password?: boolean }>({});
+  const [form, setForm] = useState<FormDataAuth>({ username: '', password: '' });
+  const [errors, setErrors] = useState<FormDataErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [globalError, setGlobalError] = useState('');
   const navigate = useNavigate();
