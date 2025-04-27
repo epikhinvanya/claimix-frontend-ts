@@ -53,7 +53,9 @@ export function TabsTrigger({ children, isActive, onSelect }: TabsTriggerProps) 
   return (
     <button
       onClick={onSelect}
-      className={`px-4 py-2 rounded-md text-sm ${isActive ? 'bg-yellow-400 text-white' : 'bg-gray-200'}`}
+      className={`px-4 py-2 rounded-md text-sm ${
+        isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
+      }`}
     >
       {children}
     </button>

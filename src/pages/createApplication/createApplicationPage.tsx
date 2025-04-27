@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -15,20 +15,34 @@ type ApiResponse = {
   tracking_code: string;
 };
 
+interface OptionData {
+  id: number;
+  name: string;
+}
+
 export default function CreateApplicationPage() {
   const [phone, setPhone] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [type, setType] = useState<string>('repair');
   const [comment, setComment] = useState<string>('');
   const [errors, setErrors] = useState<Errors>({});
+  const [options, setOptions] = useState<OptionData[]>([]);
+  const [selectedOption, setSelectedOption] = useState<OptionData | null>(null);
 
   const validate = (): Errors => {
     const newErrors: Errors = {};
     if (!name.trim()) newErrors.name = 'Введите имя';
     if (!comment.trim()) newErrors.comment = 'Введите комментарий';
     if (!phone || phone.replace(/\D/g, '').length < 11) newErrors.phone = 'Неверный номер';
+    if (!selectedOption) newErrors.comment = 'Выберите тип заявки';
     return newErrors;
   };
+
+  useEffect(() => {
+    axios
+      .get('http://test.claimix.ru/api/workflows/workflows-short/short/')
+      .then(res => setOptions(res.data))
+      .catch(err => console.error('Ошибка загрузки опций', err));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,7 +56,7 @@ export default function CreateApplicationPage() {
       const response: AxiosResponse<ApiResponse> = await axios.post(
         'http://test.claimix.ru/api/workflows/applications/',
         {
-          workflow: 1,
+          workflow: selectedOption?.id,
           data: { message: comment },
           phone_number: '+' + phone.replace(/\D/g, ''),
           name,
@@ -53,9 +67,9 @@ export default function CreateApplicationPage() {
 
       setPhone('');
       setName('');
-      setType('repair');
       setComment('');
       setErrors({});
+      setSelectedOption(null);
 
       toast.success(
         <span>
@@ -108,15 +122,25 @@ export default function CreateApplicationPage() {
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg text-sm outline-none focus:ring-2 ring-blue-500"
-          >
-            <option value="repair">Ремонт</option>
-            <option value="cleaning">Уборка</option>
-            <option value="lighting">Освещение</option>
-          </select>
+          <div>
+            <select
+              value={selectedOption?.id ?? ''}
+              onChange={(e) => {
+                const selected = options.find((opt) => opt.id === Number(e.target.value));
+                setSelectedOption(selected || null);
+              }}
+              className="w-full px-4 py-2 border rounded-lg text-sm outline-none focus:ring-2 ring-blue-500"
+            >
+              <option value="" disabled>
+                Выберите тип заявки
+              </option>
+              {options.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <textarea
