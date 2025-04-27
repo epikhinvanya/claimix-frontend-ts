@@ -1,62 +1,124 @@
-import { useEffect} from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { $workflows, createWorkflowFx, deleteWorkflowFx, fetchWorkflowsFx, renameWorkflowFx, setWorkflows } from "@features/workflow/model";
 import { useStore } from "effector-react";
+import { $workflows, createWorkflowFx, deleteWorkflowFx, fetchWorkflowsFx, renameWorkflowFx, setWorkflows } from "../../features/workflow/model";
 
 export const Workplace = () => {
-    const workflows = useStore($workflows)
-    const navigate = useNavigate();
+  const workflows = useStore($workflows);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchWorkflowsFx().then(setWorkflows);
-    }, [])
+  const [newWorkflowName, setNewWorkflowName] = useState('');
+  const [renameId, setRenameId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState('');
 
-    const handleDelete = async (id: number) => {
-        await deleteWorkflowFx(id);
-        fetchWorkflowsFx().then(setWorkflows);
+  useEffect(() => {
+    fetchWorkflowsFx().then(setWorkflows);
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    await deleteWorkflowFx(id);
+    fetchWorkflowsFx().then(setWorkflows);
+  };
+
+  const handleOpen = (id: number) => {
+    navigate(`/builder/${id}`);
+  };
+
+  const handleCreate = async () => {
+    if (newWorkflowName.trim() !== '') {
+      await createWorkflowFx(newWorkflowName.trim());
+      setNewWorkflowName('');
+      fetchWorkflowsFx().then(setWorkflows);
     }
+  };
 
-    const handleOpen = (id: number) => {
-        navigate(`/builder/${id}`)
+  const handleStartRename = (id: number, currentName: string) => {
+    setRenameId(id);
+    setRenameValue(currentName);
+  };
+
+  const handleRename = async () => {
+    if (renameId !== null && renameValue.trim() !== '') {
+      await renameWorkflowFx({ id: renameId, name: renameValue.trim() });
+      setRenameId(null);
+      setRenameValue('');
+      fetchWorkflowsFx().then(setWorkflows);
     }
+  };
 
-    const handleCreate = async () => {
-        const name = prompt('Название нового workflow:', 'Новый Workflow');
-        if (name) {
-            await createWorkflowFx(name);
-        }
-    }
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-gray-800">Рабочее пространство Workflow</h1>
 
-    const handleRename = async (id: number, currentName: string) => {
-        const newName = prompt('Новое имя workflow:', currentName);
-        if (newName && newName !== currentName) {
-          await renameWorkflowFx({ id, name: newName });
-          fetchWorkflowsFx();
-        }
-      };
-      
-
-    return (
-    <div className="p-6 space-y-4">
-        <h1 className="text-2xl font-bold">Workflow Workplace</h1>
-        <button onClick={handleCreate} className="bg-blue-500 text-white px-4 py-2 rounded">
-        New Workflow
+      <div className="flex gap-4">
+        <input
+          type="text"
+          placeholder="Введите название workflow"
+          value={newWorkflowName}
+          onChange={(e) => setNewWorkflowName(e.target.value)}
+          className="p-2 border rounded-lg flex-1"
+        />
+        <button
+          onClick={handleCreate}
+          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Создать
         </button>
-        <div className="space-y-2">
-            {workflows.map((wf) => (
-                <div key={wf.id} className="flex justify-between items-center bg-gray-100 p-3 rounded">
-                    <span>{wf.name}</span>
-                    <div className="flex flex-row gap-2">
-                    <button onClick={() => handleOpen(wf.id)} className="px-3 py-2 text-sm font-medium text-center text-white bg-green-500 rounded-lg 
-                                            hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-700 dark:focus:ring-green-800">Открыть</button>
-                    <button onClick={() => handleDelete(wf.id)} className="px-3 py-2 text-sm font-medium text-center text-white bg-red-500 rounded-lg 
-                                            hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-700 dark:focus:ring-red-800">Удалить</button>
-                    <button onClick={() => handleRename(wf.id, wf.name)} className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg 
-                                            hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Переименовать</button>
-                    </div>
+      </div>
+
+      <div className="space-y-4">
+        {workflows.map((wf) => (
+          <div key={wf.id} className="flex justify-between items-center bg-white p-4 rounded-2xl border shadow-sm">
+            <div className="flex-1">
+              {renameId === wf.id ? (
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    className="p-2 border rounded-lg flex-1"
+                  />
+                  <button
+                    onClick={handleRename}
+                    className="px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600"
+                  >
+                    Сохранить
+                  </button>
+                  <button
+                    onClick={() => setRenameId(null)}
+                    className="px-3 py-2 text-sm font-medium text-white bg-gray-400 rounded-lg hover:bg-gray-500"
+                  >
+                    Отмена
+                  </button>
                 </div>
-            ))}
-        </div>
+              ) : (
+                <span className="text-gray-800 font-medium">{wf.name}</span>
+              )}
+            </div>
+
+            <div className="flex gap-2 ml-4">
+              <button
+                onClick={() => handleOpen(wf.id)}
+                className="px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600"
+              >
+                Открыть
+              </button>
+              <button
+                onClick={() => handleDelete(wf.id)}
+                className="px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600"
+              >
+                Удалить
+              </button>
+              <button
+                onClick={() => handleStartRename(wf.id, wf.name)}
+                className="px-3 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+              >
+                Переименовать
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-    );
-}
+  );
+};

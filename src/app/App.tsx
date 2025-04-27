@@ -2,29 +2,23 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ReactFlowProvider } from 'reactflow';
 import { initSession } from './init';
 
-// Страницы авторизации
+// Страницы
 import LoginPage from '../pages/login/LoginPage';
 import RegisterPage from '../pages/register/RegisterPage';
 import DashboardPage from '../pages/dashboard/DashboardPage';
-
-// Страницы workflow
 import { Workplace } from '../pages/Workplace/Workplace';
 import { WorkflowBuilder } from '../pages/WorkflowBuilder/WorkflowBuilder';
+import ApplicationsPage from '../pages/applications/ApplicationsPage';
+import ApplicationDetailPage from '../pages/applications/ApplicationDetailPage';
+import CreateApplicationPage from '../pages/createApplication/createApplicationPage';
+import PublicLandingPage from '../pages/public/PublicLandingPage';
 
 // Обёртки
 import ProtectedRoute from '../shared/ui/ProtectedRoute';
 import AuthRedirect from '../shared/ui/AuthRedirect';
-
-
-import ApplicationsPage from '../pages/applications/ApplicationsPage';
-import ApplicationDetailPage from '../pages/applications/ApplicationDetailPage';
-
-
-import CreateApplicationPage from '../pages/createApplication/createApplicationPage';
+import { AppLayout } from '../shared/layouts/AppLayout';
 
 export default function App() {
-
-
   return (
     <BrowserRouter>
       <Routes>
@@ -34,42 +28,31 @@ export default function App() {
           </AuthRedirect>
         } />
         <Route path="/register" element={
-          // <AuthRedirect>
+          <AuthRedirect>
             <RegisterPage />
-          // </AuthRedirect>
+          </AuthRedirect>
         } />
 
-        <Route path="/dashboard" element={
-          // <ProtectedRoute>
-            <DashboardPage />
-          // </ProtectedRoute>
-        } />
+        <Route path="/" element={<PublicLandingPage />} />
+        <Route path="/new-application" element={<CreateApplicationPage />} />
 
-        <Route path="/applications" element={<ApplicationsPage />} />
-        {/* <Route path="/applications/:id" element={<ApplicationDetailPage />} /> */}
-        <Route path="/applications/:id" element={<ApplicationDetailPage />} />
-
-        <Route path="/new-application" element={
-          // <ProtectedRoute>
-          <CreateApplicationPage />
-          // </ProtectedRoute>
-        } />
-        <Route path="/builder/:id" element={
-          // <ProtectedRoute>
+        <Route element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+          <Route path="/workplace" element={<Workplace />} />
+          <Route path="/builder/:id" element={
             <ReactFlowProvider>
               <WorkflowBuilder />
             </ReactFlowProvider>
-          // </ProtectedRoute>
-        } />
+          } />
+        </Route>
 
-        <Route path="/workplace" element={
-          // <ProtectedRoute>
-            <Workplace />
-          // </ProtectedRoute>
-        } />
-
-
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

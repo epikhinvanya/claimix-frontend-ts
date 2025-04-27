@@ -29,7 +29,7 @@ export default function ApplicationsListPage() {
     axios
       .get('http://test.claimix.ru/api/workflows/applications/', {
         headers: {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDk4ODAwLCJpYXQiOjE3NDU0OTcwMDAsImp0aSI6IjVhMTYwMDlhYzc2MTQ4Njc5ZWRlODI1ZWQzOWY4ZjcyIiwidXNlcl9pZCI6MX0.4TPPJqsKZc04Z2JbfPOvIX5saNvaxZ2w472ZrVrYFrM',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NzU5MTYwLCJpYXQiOjE3NDU3NTczNjAsImp0aSI6IjczNTRiYTNmZDUwMDRhZGVhOTNjNzNjYWM1MjAwMjJiIiwidXNlcl9pZCI6MTA2fQ.PpyTO3uJ66jX2B-0R87bLi15zVv1y_qLZvo92wDIOpI',
         },
       })
       .then((res) => setApplications(res.data))
