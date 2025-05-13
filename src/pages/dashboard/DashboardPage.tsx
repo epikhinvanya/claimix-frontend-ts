@@ -1,6 +1,7 @@
 import { useUnit } from 'effector-react';
 import { $username } from "../../features/auth/model/";
 import { Workplace } from '../../pages/Workplace/Workplace';
+import { ConfirmModal } from '@shared/ui/ConfirmModal';
 
 export default function DashboardPage() {
   const username = useUnit($username) || 'Пользователь';
@@ -11,7 +12,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 pb-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Добро пожаловать, {username}!</h1>
-            <p className="text-sm text-gray-500">Вот краткая сводка по заявкам</p>
+            <p className="mt-2 text-sm text-gray-500">Краткая сводка по заявкам</p>
           </div>
         </div>
 
@@ -35,6 +36,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        <ConfirmModal/>
         <Workplace />
       </div>
     </div>
