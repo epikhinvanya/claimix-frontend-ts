@@ -12,7 +12,7 @@ export interface WorkflowNode {
     name: string,
     type: 'start' | 'task' | 'end',
     position: {x:number; y:number},
-    assign_role: string | null,
+    assigned_role: string | null,
     action: string | null
 }
 

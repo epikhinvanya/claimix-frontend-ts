@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { $workflows, createWorkflowFx, deleteWorkflowFx, fetchWorkflowsFx, renameWorkflowFx, setWorkflows } from "../../features/workflow/model";
 import { openModal } from "@shared/model/ConfirmModal";
 import { Workflow } from "@entities/Workflow/model/types";
 import { ExternalLink, Trash, Settings } from "lucide-react";
 
 export const Workplace = () => {
-  const workflows = useStore($workflows);
+  const workflows = useUnit($workflows);
   const navigate = useNavigate();
 
   const [newWorkflowName, setNewWorkflowName] = useState('');
-  const [renameId, setRenameId] = useState<number | null>(null);
-  const [renameValue, setRenameValue] = useState('');
 
   useEffect(() => {
     fetchWorkflowsFx().then(setWorkflows);
@@ -41,12 +39,6 @@ export const Workplace = () => {
       setNewWorkflowName('');
       fetchWorkflowsFx().then(setWorkflows);
     }
-  };
-
-  const handleStartRename = (id: number, currentName: string) => {
-    setRenameId(id);
-    setRenameValue(currentName);
-
   };
 
   const handleRename = async (wf: Workflow) => {

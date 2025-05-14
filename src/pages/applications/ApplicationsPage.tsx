@@ -112,7 +112,7 @@ export default function ApplicationsListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6fa] px-6 py-8">
+    <div className="min-h-screen bg-[#f5f6fa] px-6 pt-8 pb-4">
       <div className="bg-white rounded-2xl shadow-xl w-full p-6 flex flex-col gap-6">
         <div className="sticky top-0 z-10 bg-white pb-4 mb-6 border-b border-gray-200">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -129,7 +129,7 @@ export default function ApplicationsListPage() {
                 <SelectItem value="done">Закрыта</SelectItem>
               </Select>
 
-              <Select onValueChange={(val) => setViewMode(val as 'kanban' | 'table')} defaultValue="table">
+              <Select onValueChange={(val: any) => setViewMode(val as 'kanban' | 'table')} defaultValue="table">
                 <SelectItem value="table">Таблица</SelectItem>
                 <SelectItem value="kanban">Канбан</SelectItem>
               </Select>

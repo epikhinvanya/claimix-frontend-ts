@@ -8,6 +8,12 @@ export const fetchWorkflowsFx = createEffect(async () => {
     return res.data;
 })
 
+export const fetchWorkflowByIdFx = createEffect(async (id: number) => {
+    const res = await api.get(`/api/workflows/workflows/${id}/`)
+    console.log(res.data)
+    return res.data;
+})
+
 export const createWorkflowFx = createEffect(async (name: string): Promise<Workflow> => {
     const workflowBody = {
         name,

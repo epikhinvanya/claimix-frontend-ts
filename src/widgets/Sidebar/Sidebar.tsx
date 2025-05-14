@@ -25,7 +25,7 @@ export function Sidebar() {
     ${isActive ? 'bg-blue-100 text-blue-800' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'}`;
 
   return (
-    <div className="min-h-screen w-64 bg-white border-r border-gray-200 flex flex-col p-6">
+    <div className="h-full w-full bg-white border-r border-gray-200 flex flex-col p-6 overflow-y-auto">
       <div className="mb-8">
         <h1 className="text-xl font-bold text-gray-800 capitalize">{subdomain}</h1>
       </div>
@@ -38,7 +38,7 @@ export function Sidebar() {
           <FileText size={18} /> Все заявки
         </NavLink>
         <NavLink to="/workplace" className={linkClass}>
-          <ClipboardList size={18} /> Воркфлоу
+          <ClipboardList size={18} /> Схемы
         </NavLink>
       </nav>
 
