@@ -1,3 +1,4 @@
+import { ConfirmModal } from "@shared/ui/ConfirmModal";
 import { Sidebar } from "../../widgets/Sidebar/Sidebar"; 
 import { Outlet } from "react-router-dom";
 
@@ -11,6 +12,7 @@ export function AppLayout() {
       <main className="flex-1 px-8 overflow-x-hidden overflow-y-auto">
         <Outlet />
       </main>
+      <ConfirmModal/>
     </div>
   );
 }

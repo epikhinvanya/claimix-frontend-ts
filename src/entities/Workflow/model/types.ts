@@ -11,9 +11,9 @@ export interface WorkflowNode {
     external_id: string,
     name: string,
     type: 'start' | 'task' | 'end',
-    position: {x:number; y:number},
-    assigned_role: string | null,
-    action: string | null
+    position?: {x:number; y:number},
+    assigned_role?: string | null,
+    action?: string | null
 }
 
 export interface WorkflowEdge {
