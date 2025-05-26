@@ -45,7 +45,7 @@ export function Sidebar() {
       <div className="pt-6 border-t border-gray-200">
         <Button
           onClick={handleLogout}
-          className="w-full flex items-center justify-start gap-3 text-red-600 hover:bg-red-50"
+          className="w-full flex items-center justify-start gap-3 text-red-600 "
         >
           <LogOut size={18} /> Выйти
         </Button>

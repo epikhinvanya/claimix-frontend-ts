@@ -11,10 +11,11 @@ import ReactFlow, {
   Edge
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { fetchWorkflowByIdFx, updateWorkflowFx, updateNodeFx } from '@features/workflow/model';
+import { fetchWorkflowByIdFx, updateWorkflowFx} from '@features/workflow/model';
 import { useEffect, useState } from 'react';
 import { WorkflowNode } from '@entities/Workflow/model/types';
-import NodeDrawer from './NodeDrawer';
+import NodeDrawer from '../../widgets/NodeDrawer/NodeDrawer';
+import { showNote } from '@shared/model/Note';
 
 export const WorkflowBuilder = () => {
   const navigate = useNavigate();
@@ -25,10 +26,17 @@ export const WorkflowBuilder = () => {
 
   // Рендер nodes и edges по id для выбранного workflow
   useEffect(() => {
-    if (!workflowId) return;
+    const draft = localStorage.getItem(`workflow-draft-${workflowId}`);
+    if (draft) {
+      const { nodes, edges } = JSON.parse(draft);
+      setNodes(nodes);
+      setEdges(edges);
+      return;
+    }
 
+    if (!workflowId) return;
     fetchWorkflowByIdFx(Number(workflowId)).then(({ nodes, edges }) => {
-      const mappedNodes: Node[] = (nodes || []).map((n: { external_id: any; position: any; type: string; name: any; }) => ({
+        const mappedNodes: Node[] = (nodes || []).map((n: { external_id: any; position: any; type: string; name: any; }) => ({
         id: n.external_id,
         position: n.position,
         type:
@@ -38,24 +46,33 @@ export const WorkflowBuilder = () => {
             ? 'output'
             : 'default',
         data: { label: n.name },
-      }));
+    }));
 
-      const labelToIdMap: Record<string, string> = {};
-      for (const n of nodes) {
-        const label = `${n.name} (${n.type})`;
-        labelToIdMap[label] = n.external_id;
-      }
+    const labelToIdMap: Record<string, string> = {};
+    for (const n of nodes) {
+      const label = `${n.name} (${n.type})`;
+      labelToIdMap[label] = n.external_id;
+    }
 
-      const mappedEdges: Edge[] = (edges || []).map((e: { source: string | number; target: string | number; }) => ({
-        id: `${labelToIdMap[e.source]}-${labelToIdMap[e.target]}`,
-        source: labelToIdMap[e.source],
-        target: labelToIdMap[e.target],
-      }));
+    const mappedEdges: Edge[] = (edges || []).map((e: { source: string | number; target: string | number; }) => ({
+      id: `${labelToIdMap[e.source]}-${labelToIdMap[e.target]}`,
+      source: labelToIdMap[e.source],
+      target: labelToIdMap[e.target],
+    }));
 
-      setNodes(mappedNodes);
-      setEdges(mappedEdges);
-      });
+    setNodes(mappedNodes);
+    setEdges(mappedEdges);
+    });
   }, [workflowId]);
+
+  useEffect(() => {
+    const savedDraft = {
+      nodes,
+      edges,
+    }
+
+    localStorage.setItem(`workflow-draft-${workflowId}`, JSON.stringify(savedDraft));
+  }, [nodes, edges, workflowId])
 
 
   const onConnect = (connection: Connection) =>
@@ -69,10 +86,8 @@ export const WorkflowBuilder = () => {
 
   // Хэндлер для сохранения nodes и edges на бэк
   const handleSave = async () => {
-    console.log({workflowName, nodes, edges})
+    console.log({nodes, edges})
     const payload = {
-      id: Number(workflowId),
-      name: workflowName,
       nodes: nodes.map(n => ({
         external_id: n.id,
         name: n.data.label,
@@ -90,6 +105,10 @@ export const WorkflowBuilder = () => {
   
     await updateWorkflowFx({ id: Number(workflowId), data: payload });
     navigate('/dashboard');
+    showNote({
+      icon: 'success',
+      message: 'Схема успешно сохранилась!',
+    })
   };
 
 
@@ -102,29 +121,34 @@ export const WorkflowBuilder = () => {
       setSelectedNode(node);
   }
 
-  const handleNodeSave = async (updatedNode: WorkflowNode) => {
-    if (!workflowId) return;
-
-    await updateNodeFx({
-      workflowId: Number(workflowId),
-      nodeId: updatedNode.external_id,
-      newName: updatedNode.name,
-    });
-
-    setNodes((nds) =>
-      nds.map((n) =>
-        n.id === String(updatedNode.external_id)
-          ? { ...n, data: { ...n.data, label: updatedNode.name } }
-          : n
-      )
-    );
-
+  const handleNodeSave = (updatedNode: WorkflowNode) => {
+  // Локально обновляем имя ноды
+    if (updatedNode.name.length < 3 || updatedNode.name.length > 12) {
+      showNote({
+        icon: 'error',
+        message: 'Недопустимая длина названия!'
+      })
+    } else {
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === updatedNode.external_id
+            ? { ...n, data: { ...n.data, label: updatedNode.name } }
+            : n
+        )
+      );
+      showNote({
+        icon: 'success',
+        message: 'Названиние изменено!'
+      })
+    }
     setSelectedNode(null);
   };
 
-  const handleNodeDelete = (nodeId: number) => {
-    setSelectedNode(null)
-  }
+ const handleNodeDelete = (nodeId: string) => {
+  setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+  setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
+  setSelectedNode(null);
+};
 
 
   return (
@@ -193,6 +217,7 @@ export const WorkflowBuilder = () => {
       <NodeDrawer node={selectedNode}
         onClose={() => setSelectedNode(null)}
         onSave={handleNodeSave}
+        onDelete={handleNodeDelete}
       />
 
       {/* React Flow Canvas */}
@@ -221,3 +246,4 @@ export const WorkflowBuilder = () => {
     </div>
   );
 };
+

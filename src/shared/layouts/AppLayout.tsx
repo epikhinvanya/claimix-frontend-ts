@@ -1,6 +1,7 @@
 import { ConfirmModal } from "@shared/ui/ConfirmModal";
 import { Sidebar } from "../../widgets/Sidebar/Sidebar"; 
 import { Outlet } from "react-router-dom";
+import { Note } from "@shared/ui/Note";
 
 export function AppLayout() {
   return (
@@ -13,6 +14,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <ConfirmModal/>
+      <Note/>
     </div>
   );
 }

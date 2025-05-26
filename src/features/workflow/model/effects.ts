@@ -45,22 +45,3 @@ export const updateWorkflowFx = createEffect(
       return res.data;
     }
 );
-
-{/* Временный вариант переименования сущности в схеме по id */}
-// Два запроса дороговато, необходимо запросить бэкенд API для patch под nodes.
-export const updateNodeFx = createEffect(async ({workflowId, nodeId, newName} : {workflowId: number, nodeId: string, newName: string}) => {
-    const workflow = await fetchWorkflowByIdFx(workflowId);
-
-    const updatedNodes = (workflow.nodes || []).map((node: { external_id: string; }) =>
-        node.external_id === nodeId
-        ? {...node, name: newName}
-        :node
-    )
-
-    const updatedWorkflow: Partial<Workflow> = {
-        nodes: updatedNodes,
-    };
-
-    await api.patch(`/api/workflows/workflows/${workflowId}/`, updatedWorkflow);
-    }
-)
