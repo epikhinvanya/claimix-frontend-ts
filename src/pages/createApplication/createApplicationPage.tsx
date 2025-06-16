@@ -4,6 +4,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { showNote } from '@shared/model/Note';
 
 type Errors = {
   phone?: string;
@@ -71,22 +72,27 @@ export default function CreateApplicationPage() {
       setErrors({});
       setSelectedOption(null);
 
-      toast.success(
-        <span>
-          Заявка отправлена! <br />
-          <a
-            href={`https://test.claimix.ru/track/${tracker}`}
-            className="underline text-blue-300"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Перейти к заявке
-          </a>
-        </span>,
-        { autoClose: 10000, position: 'bottom-center' }
-      );
+      showNote({
+        icon: 'success',
+        message: (
+          <span>
+            Заявка отправлена! <br />
+            <a
+              href={`https://test.claimix.ru/track/${tracker}`}
+              className="underline text-blue-300"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Перейти к заявке
+            </a>
+          </span>
+        ) as unknown as string,
+      });
     } catch (error) {
-      toast.error('Ошибка при отправке');
+      showNote({
+        icon: 'error',
+        message: 'Ошибка при отправке'
+      })
     }
   };
 
