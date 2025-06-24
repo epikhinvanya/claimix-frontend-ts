@@ -17,6 +17,7 @@ import PublicLandingPage from '../pages/public/PublicLandingPage';
 import ProtectedRoute from '../shared/ui/ProtectedRoute';
 import AuthRedirect from '../shared/ui/AuthRedirect';
 import { AppLayout } from '../shared/layouts/AppLayout';
+import IntroPage from '@pages/intro/IntroPage';
 
 export default function App() {
   return (
@@ -33,7 +34,8 @@ export default function App() {
           </AuthRedirect>
         } />
 
-        <Route path="/" element={<PublicLandingPage />} />
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/search" element={<PublicLandingPage />} />
         <Route path="/new-application" element={<CreateApplicationPage />} />
 
         <Route element={
